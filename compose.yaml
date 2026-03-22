@@ -1,0 +1,68 @@
+services:
+  # --- DB ---
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: pg_database
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d app_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # --- RABBITMQ ---
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq_broker
+    ports:
+      - "5672:5672" 
+      - "15672:15672" 
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # --- BACKEND ---
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: go_backend
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+
+  # --- CONSUMER ---
+  consumer:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    container_name: go_consumer
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DB_URL: postgres://user:password@db:5432/app_db?sslmode=disable
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+
+volumes:
+  pgdata:
+  rabbit_data: 
