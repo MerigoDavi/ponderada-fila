@@ -1,0 +1,49 @@
+
+          /\      Grafana   /‾‾/  
+     /\  /  \     |\  __   /  /   
+    /  \/    \    | |/ /  /   ‾‾\ 
+   /          \   |   (  |  (‾)  |
+  / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: -
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 500 max VUs, 1m30s max duration (incl. graceful stop):
+              * default: Up to 500 looping VUs for 1m0s over 3 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✓ 'p(95)<500' p(95)=1.75ms
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 112059  1862.619863/s
+    checks_succeeded...: 100.00% 112059 out of 112059
+    checks_failed......: 0.00%   0 out of 112059
+
+    ✓ status is 202
+
+    HTTP
+    http_req_duration..............: avg=766.18µs min=104µs    med=622.97µs max=9.44ms   p(90)=1.45ms   p(95)=1.75ms  
+      { expected_response:true }...: avg=766.18µs min=104µs    med=622.97µs max=9.44ms   p(90)=1.45ms   p(95)=1.75ms  
+    http_req_failed................: 0.00%  0 out of 112059
+    http_reqs......................: 112059 1862.619863/s
+
+    EXECUTION
+    iteration_duration.............: avg=201.24ms min=200.19ms med=201.21ms max=209.95ms p(90)=201.91ms p(95)=202.17ms
+    iterations.....................: 112059 1862.619863/s
+    vus............................: 6      min=6           max=500
+    vus_max........................: 500    min=500         max=500
+
+    NETWORK
+    data_received..................: 22 MB  358 kB/s
+    data_sent......................: 26 MB  433 kB/s
+
+running (1m00.2s), 000/500 VUs, 112059 complete and 0 interrupted iterations
+default ✓ [ 100% ] 000/500 VUs  1m0s
